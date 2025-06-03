@@ -15,6 +15,8 @@ MCP-MCP は、[Model Context Protocol (MCP)](https://modelcontextprotocol.io/int
 
 ## セットアップ手順
 
+※詳細記事はブログ(Work in progress)にて掲載予定
+
 ### 1. 必要なツールのインストール
 
 ```bash
