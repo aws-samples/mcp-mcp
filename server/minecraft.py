@@ -34,11 +34,12 @@ if not os.path.exists(tools_dir):
     logger.critical(f"Tools directory not found: {tools_dir}")
     sys.exit(1)
 
+
 @mcp.tool()
 def capture():
     """
     This function takes a screenshot of Minecraft and returns the image file path.
-    
+
     Args:
         None
     Returns:
@@ -54,36 +55,37 @@ def capture():
     result = subprocess.run(
         command,
         cwd=script_dir,
-        capture_output=True, 
+        capture_output=True,
         text=True,
-        timeout=30  # 30秒のタイムアウト
+        timeout=30,  # 30秒のタイムアウト
     )
     logger.info(result.stderr)
     logger.info(result.stdout.strip())
     return result.stdout.strip()
 
+
 @mcp.tool()
 def getBlock(x: int, y: int, z: int) -> int:
     """
     Get the block type at the specified coordinates.
-    
+
     Args:
         x: x coordinate, required, int
         y: y coordinate, required, int
         z: z coordinate, required, int
-    
+
     Returns:
         Block type ID as an integer
     """
     # 入力値の検証
     try:
         # 整数型の検証
-        for param_name, param_value in [('x', x), ('y', y), ('z', z)]:
+        for param_name, param_value in [("x", x), ("y", y), ("z", z)]:
             if not isinstance(param_value, int):
                 error_msg = f"Parameter {param_name} must be an integer, got {type(param_value).__name__}"
                 logger.error(error_msg)
                 return f"Error: {error_msg}"
-        
+
         # y座標の範囲検証
         if y < 0 or y > 255:
             error_msg = f"y must be between 0 and 255, got {y}"
@@ -93,17 +95,17 @@ def getBlock(x: int, y: int, z: int) -> int:
         error_msg = f"Parameter validation error: {str(e)}"
         logger.error(error_msg)
         return f"Error: {error_msg}"
-    
+
     # スクリプトパスの設定と検証
     script_path = os.path.join(this_file_dir, "tools/getBlock.py")
     if not os.path.exists(script_path):
         error_msg = f"Script not found: {script_path}"
         logger.error(error_msg)
         return f"Error: {error_msg}"
-    
+
     script_dir = os.path.dirname(script_path)
     script_name = os.path.basename(script_path)
-    
+
     # コマンドの構築
     command = ["uv", "run", script_name, "--x", str(x), "--y", str(y), "--z", str(z)]
 
@@ -116,11 +118,11 @@ def getBlock(x: int, y: int, z: int) -> int:
         result = subprocess.run(
             command,
             cwd=script_dir,
-            capture_output=True, 
+            capture_output=True,
             text=True,
-            timeout=30  # 30秒のタイムアウト
+            timeout=30,  # 30秒のタイムアウト
         )
-        
+
         # 実行結果の処理
         if result.returncode == 0:
             logger.info(f"Command executed successfully: {result.stdout.strip()}")
@@ -131,18 +133,18 @@ def getBlock(x: int, y: int, z: int) -> int:
         else:
             error_msg = f"Command failed with return code {result.returncode}: {result.stderr.strip()}"
             logger.error(error_msg)
-            
+
             # エラーコードに基づいた詳細なエラーメッセージ
             error_details = {
                 1: "Invalid value provided",
                 2: "Connection error to Minecraft server",
                 3: "Invalid argument",
-                4: "Unexpected error in script execution"
+                4: "Unexpected error in script execution",
             }
-            
+
             error_detail = error_details.get(result.returncode, "Unknown error")
             return f"Error: {error_detail} - {result.stderr.strip()}"
-            
+
     except subprocess.TimeoutExpired:
         error_msg = "Command execution timed out after 30 seconds"
         logger.error(error_msg)
@@ -161,18 +163,19 @@ def getBlock(x: int, y: int, z: int) -> int:
         logger.error(error_msg)
         return f"Error: {error_msg}"
 
+
 @mcp.tool()
 def setBlock(x: int, y: int, z: int, blockType: int, blockData: int = None) -> str:
     """
     Set a block at the specified coordinates.
-    
+
     Args:
         x: x coordinate, required, int
         y: y coordinate, required, int
         z: z coordinate, required, int
         blockType: type of block to set (0-255), required, int
         blockData: data value for the block (0-15), optional, int
-    
+
     Returns:
         Result message
     """
@@ -180,31 +183,34 @@ def setBlock(x: int, y: int, z: int, blockType: int, blockData: int = None) -> s
     try:
         # 整数型の検証
         for param_name, param_value in [
-            ('x', x), ('y', y), ('z', z), ('blockType', blockType)
+            ("x", x),
+            ("y", y),
+            ("z", z),
+            ("blockType", blockType),
         ]:
             if not isinstance(param_value, int):
                 error_msg = f"Parameter {param_name} must be an integer, got {type(param_value).__name__}"
                 logger.error(error_msg)
                 return f"Error: {error_msg}"
-        
+
         # blockDataが指定されている場合は整数型の検証
         if blockData is not None and not isinstance(blockData, int):
             error_msg = f"Parameter blockData must be an integer, got {type(blockData).__name__}"
             logger.error(error_msg)
             return f"Error: {error_msg}"
-        
+
         # blockType の範囲検証
         if blockType < 0 or blockType > 255:
             error_msg = f"blockType must be between 0 and 255, got {blockType}"
             logger.error(error_msg)
             return f"Error: {error_msg}"
-        
+
         # blockData の範囲検証（指定されている場合）
         if blockData is not None and (blockData < 0 or blockData > 15):
             error_msg = f"blockData must be between 0 and 15, got {blockData}"
             logger.error(error_msg)
             return f"Error: {error_msg}"
-        
+
         # y座標の範囲検証
         if y < 0 or y > 255:
             error_msg = f"y must be between 0 and 255, got {y}"
@@ -214,19 +220,31 @@ def setBlock(x: int, y: int, z: int, blockType: int, blockData: int = None) -> s
         error_msg = f"Parameter validation error: {str(e)}"
         logger.error(error_msg)
         return f"Error: {error_msg}"
-    
+
     # スクリプトパスの設定と検証
     script_path = os.path.join(this_file_dir, "tools/setBlock.py")
     if not os.path.exists(script_path):
         error_msg = f"Script not found: {script_path}"
         logger.error(error_msg)
         return f"Error: {error_msg}"
-    
+
     script_dir = os.path.dirname(script_path)
     script_name = os.path.basename(script_path)
-    
+
     # コマンドの構築
-    command = ["uv", "run", script_name, "--x", str(x), "--y", str(y), "--z", str(z), "--blockType", str(blockType)]
+    command = [
+        "uv",
+        "run",
+        script_name,
+        "--x",
+        str(x),
+        "--y",
+        str(y),
+        "--z",
+        str(z),
+        "--blockType",
+        str(blockType),
+    ]
     if blockData is not None:
         command.extend(["--blockData", str(blockData)])
 
@@ -239,11 +257,11 @@ def setBlock(x: int, y: int, z: int, blockType: int, blockData: int = None) -> s
         result = subprocess.run(
             command,
             cwd=script_dir,
-            capture_output=True, 
+            capture_output=True,
             text=True,
-            timeout=30  # 30秒のタイムアウト
+            timeout=30,  # 30秒のタイムアウト
         )
-        
+
         # 実行結果の処理
         if result.returncode == 0:
             logger.info(f"Command executed successfully: {result.stdout.strip()}")
@@ -251,18 +269,18 @@ def setBlock(x: int, y: int, z: int, blockType: int, blockData: int = None) -> s
         else:
             error_msg = f"Command failed with return code {result.returncode}: {result.stderr.strip()}"
             logger.error(error_msg)
-            
+
             # エラーコードに基づいた詳細なエラーメッセージ
             error_details = {
                 1: "Invalid value provided",
                 2: "Connection error to Minecraft server",
                 3: "Invalid argument",
-                4: "Unexpected error in script execution"
+                4: "Unexpected error in script execution",
             }
-            
+
             error_detail = error_details.get(result.returncode, "Unknown error")
             return f"Error: {error_detail} - {result.stderr.strip()}"
-            
+
     except subprocess.TimeoutExpired:
         error_msg = "Command execution timed out after 30 seconds"
         logger.error(error_msg)
@@ -281,14 +299,15 @@ def setBlock(x: int, y: int, z: int, blockType: int, blockData: int = None) -> s
         logger.error(error_msg)
         return f"Error: {error_msg}"
 
+
 @mcp.tool()
 def getPlayerPos(tile: bool = False) -> dict:
     """
     Get the player's current position.
-    
+
     Args:
         tile: If True, get tile position instead of exact position, optional, bool
-    
+
     Returns:
         Dictionary containing x, y, z coordinates
     """
@@ -302,17 +321,17 @@ def getPlayerPos(tile: bool = False) -> dict:
         error_msg = f"Parameter validation error: {str(e)}"
         logger.error(error_msg)
         return {"error": error_msg}
-    
+
     # スクリプトパスの設定と検証
     script_path = os.path.join(this_file_dir, "tools/getPlayerPos.py")
     if not os.path.exists(script_path):
         error_msg = f"Script not found: {script_path}"
         logger.error(error_msg)
         return {"error": error_msg}
-    
+
     script_dir = os.path.dirname(script_path)
     script_name = os.path.basename(script_path)
-    
+
     # コマンドの構築
     command = ["uv", "run", script_name]
     if tile:
@@ -327,11 +346,11 @@ def getPlayerPos(tile: bool = False) -> dict:
         result = subprocess.run(
             command,
             cwd=script_dir,
-            capture_output=True, 
+            capture_output=True,
             text=True,
-            timeout=30  # 30秒のタイムアウト
+            timeout=30,  # 30秒のタイムアウト
         )
-        
+
         # 実行結果の処理
         if result.returncode == 0:
             logger.info(f"Command executed successfully: {result.stdout.strip()}")
@@ -344,18 +363,18 @@ def getPlayerPos(tile: bool = False) -> dict:
         else:
             error_msg = f"Command failed with return code {result.returncode}: {result.stderr.strip()}"
             logger.error(error_msg)
-            
+
             # エラーコードに基づいた詳細なエラーメッセージ
             error_details = {
                 1: "Invalid value provided",
                 2: "Connection error to Minecraft server",
                 3: "Invalid argument",
-                4: "Unexpected error in script execution"
+                4: "Unexpected error in script execution",
             }
-            
+
             error_detail = error_details.get(result.returncode, "Unknown error")
             return {"error": f"{error_detail} - {result.stderr.strip()}"}
-            
+
     except subprocess.TimeoutExpired:
         error_msg = "Command execution timed out after 30 seconds"
         logger.error(error_msg)
@@ -374,11 +393,14 @@ def getPlayerPos(tile: bool = False) -> dict:
         logger.error(error_msg)
         return {"error": error_msg}
 
+
 @mcp.tool()
-def setBlocks(x0:int, y0: int, z0: int, x1: int, y1: int ,z1: int, blockType:int) -> str:
+def setBlocks(
+    x0: int, y0: int, z0: int, x1: int, y1: int, z1: int, blockType: int
+) -> str:
     """
     A function that places Blocks within the range of a 3D bounding box specified by arguments (defined by coordinates 1(x,y,z) and 2(x,y,z)) in Minecraft.
-    
+
     Args:
         x0: x value of coordinate 0, required , int
         y0: y value of coordinate 0, required , int
@@ -639,7 +661,7 @@ def setBlocks(x0:int, y0: int, z0: int, x1: int, y1: int ,z1: int, blockType:int
             White Concrete is 251
             White Concrete Powder is 252
             Structure Block is 255
-    
+
     Returns:
         result text
     """
@@ -647,15 +669,19 @@ def setBlocks(x0:int, y0: int, z0: int, x1: int, y1: int ,z1: int, blockType:int
     try:
         # 整数型の検証
         for param_name, param_value in [
-            ('x0', x0), ('y0', y0), ('z0', z0), 
-            ('x1', x1), ('y1', y1), ('z1', z1), 
-            ('blockType', blockType)
+            ("x0", x0),
+            ("y0", y0),
+            ("z0", z0),
+            ("x1", x1),
+            ("y1", y1),
+            ("z1", z1),
+            ("blockType", blockType),
         ]:
             if not isinstance(param_value, int):
                 error_msg = f"Parameter {param_name} must be an integer, got {type(param_value).__name__}"
                 logger.error(error_msg)
                 return f"Error: {error_msg}"
-        
+
         # blockType の範囲検証
         if blockType < 0 or blockType > 255:
             error_msg = f"blockType must be between 0 and 255, got {blockType}"
@@ -665,27 +691,36 @@ def setBlocks(x0:int, y0: int, z0: int, x1: int, y1: int ,z1: int, blockType:int
         error_msg = f"Parameter validation error: {str(e)}"
         logger.error(error_msg)
         return f"Error: {error_msg}"
-    
+
     # スクリプトパスの設定と検証
     script_path = os.path.join(this_file_dir, "tools/setBlocks.py")
     if not os.path.exists(script_path):
         error_msg = f"Script not found: {script_path}"
         logger.error(error_msg)
         return f"Error: {error_msg}"
-    
+
     script_dir = os.path.dirname(script_path)
     script_name = os.path.basename(script_path)
-    
+
     # コマンドの構築
     command = [
-        "uv", "run", script_name,
-        "--x0", str(x0),
-        "--y0", str(y0),
-        "--z0", str(z0),
-        "--x1", str(x1),
-        "--y1", str(y1),
-        "--z1", str(z1),
-        "--blockType", str(blockType)
+        "uv",
+        "run",
+        script_name,
+        "--x0",
+        str(x0),
+        "--y0",
+        str(y0),
+        "--z0",
+        str(z0),
+        "--x1",
+        str(x1),
+        "--y1",
+        str(y1),
+        "--z1",
+        str(z1),
+        "--blockType",
+        str(blockType),
     ]
 
     # コマンドの実行をログに記録
@@ -697,11 +732,11 @@ def setBlocks(x0:int, y0: int, z0: int, x1: int, y1: int ,z1: int, blockType:int
         result = subprocess.run(
             command,
             cwd=script_dir,
-            capture_output=True, 
+            capture_output=True,
             text=True,
-            timeout=30  # 30秒のタイムアウト
+            timeout=30,  # 30秒のタイムアウト
         )
-        
+
         # 実行結果の処理
         if result.returncode == 0:
             logger.info(f"Command executed successfully: {result.stdout.strip()}")
@@ -709,18 +744,18 @@ def setBlocks(x0:int, y0: int, z0: int, x1: int, y1: int ,z1: int, blockType:int
         else:
             error_msg = f"Command failed with return code {result.returncode}: {result.stderr.strip()}"
             logger.error(error_msg)
-            
+
             # エラーコードに基づいた詳細なエラーメッセージ
             error_details = {
                 1: "Invalid value provided",
                 2: "Connection error to Minecraft server",
                 3: "Invalid argument",
-                4: "Unexpected error in script execution"
+                4: "Unexpected error in script execution",
             }
-            
+
             error_detail = error_details.get(result.returncode, "Unknown error")
             return f"Error: {error_detail} - {result.stderr.strip()}"
-            
+
     except subprocess.TimeoutExpired:
         error_msg = "Command execution timed out after 30 seconds"
         logger.error(error_msg)
@@ -739,62 +774,69 @@ def setBlocks(x0:int, y0: int, z0: int, x1: int, y1: int ,z1: int, blockType:int
         logger.error(error_msg)
         return f"Error: {error_msg}"
 
+
 # サーバー起動時の健全性チェック
 def check_environment():
     """環境の健全性をチェックする"""
     try:
         # uvコマンドが利用可能かチェック
-        result = subprocess.run(
-            ["which", "uv"],
-            capture_output=True,
-            text=True
-        )
+        result = subprocess.run(["which", "uv"], capture_output=True, text=True)
         if result.returncode != 0:
-            logger.warning("uv command not found. Make sure it's installed and in PATH.")
-            print("Warning: uv command not found. Make sure it's installed and in PATH.")
-        
+            logger.warning(
+                "uv command not found. Make sure it's installed and in PATH."
+            )
+            print(
+                "Warning: uv command not found. Make sure it's installed and in PATH."
+            )
+
         # ツールスクリプトの存在確認
         tools_path = os.path.join(this_file_dir, "tools")
         if not os.path.exists(tools_path):
             logger.error(f"Tools directory not found: {tools_path}")
             print(f"Error: Tools directory not found: {tools_path}")
             return False
-        
+
         setblocks_path = os.path.join(tools_path, "setBlocks.py")
         if not os.path.exists(setblocks_path):
             logger.error(f"setBlocks.py script not found: {setblocks_path}")
             print(f"Error: setBlocks.py script not found: {setblocks_path}")
             return False
-        
+
         # mcpiライブラリが利用可能かチェック
         try:
             import importlib.util
+
             if importlib.util.find_spec("mcpi") is None:
                 logger.warning("mcpi library not found. Make sure it's installed.")
                 print("Warning: mcpi library not found. Make sure it's installed.")
         except ImportError:
             logger.warning("Could not check for mcpi library.")
             print("Warning: Could not check for mcpi library.")
-        
+
         return True
     except Exception as e:
         logger.error(f"Error during environment check: {str(e)}")
         print(f"Error during environment check: {str(e)}")
         return False
 
+
 if __name__ == "__main__":
     try:
         # 環境チェック
         if not check_environment():
-            logger.critical("Environment check failed. Some features may not work correctly.")
-            print("Critical: Environment check failed. Some features may not work correctly.")
-        
+            logger.critical(
+                "Environment check failed. Some features may not work correctly."
+            )
+            print(
+                "Critical: Environment check failed. Some features may not work correctly."
+            )
+
         logger.info("Starting Minecraft Tool Server")
         print("Starting Minecraft Tool Server...")
-        
+
         # サーバー起動
-        mcp.run(transport='stdio')
-        
+        mcp.run(transport="stdio")
+
         logger.info("Minecraft Tool Server stopped")
         print("Minecraft Tool Server stopped")
     except KeyboardInterrupt:
@@ -804,37 +846,40 @@ if __name__ == "__main__":
         logger.critical(f"Critical error in server: {str(e)}")
         print(f"Critical error: {str(e)}")
         import traceback
+
         logger.critical(f"Traceback: {traceback.format_exc()}")
         sys.exit(1)
+
+
 @mcp.tool()
 def setPlayerPos(x: float, y: float, z: float, tile: bool = False) -> str:
     """
     Set the player's position.
-    
+
     Args:
         x: x coordinate, required, float
         y: y coordinate, required, float
         z: z coordinate, required, float
         tile: If True, set tile position instead of exact position, optional, bool
-    
+
     Returns:
         Result message
     """
     # 入力値の検証
     try:
         # 数値型の検証
-        for param_name, param_value in [('x', x), ('y', y), ('z', z)]:
+        for param_name, param_value in [("x", x), ("y", y), ("z", z)]:
             if not isinstance(param_value, (int, float)):
                 error_msg = f"Parameter {param_name} must be a number, got {type(param_value).__name__}"
                 logger.error(error_msg)
                 return f"Error: {error_msg}"
-        
+
         # tile パラメータの検証
         if not isinstance(tile, bool):
             error_msg = f"Parameter tile must be a boolean, got {type(tile).__name__}"
             logger.error(error_msg)
             return f"Error: {error_msg}"
-        
+
         # y座標の範囲検証
         if y < 0 or y > 255:
             error_msg = f"y must be between 0 and 255, got {y}"
@@ -844,17 +889,17 @@ def setPlayerPos(x: float, y: float, z: float, tile: bool = False) -> str:
         error_msg = f"Parameter validation error: {str(e)}"
         logger.error(error_msg)
         return f"Error: {error_msg}"
-    
+
     # スクリプトパスの設定と検証
     script_path = os.path.join(this_file_dir, "tools/setPlayerPos.py")
     if not os.path.exists(script_path):
         error_msg = f"Script not found: {script_path}"
         logger.error(error_msg)
         return f"Error: {error_msg}"
-    
+
     script_dir = os.path.dirname(script_path)
     script_name = os.path.basename(script_path)
-    
+
     # コマンドの構築
     command = ["uv", "run", script_name, "--x", str(x), "--y", str(y), "--z", str(z)]
     if tile:
@@ -869,11 +914,11 @@ def setPlayerPos(x: float, y: float, z: float, tile: bool = False) -> str:
         result = subprocess.run(
             command,
             cwd=script_dir,
-            capture_output=True, 
+            capture_output=True,
             text=True,
-            timeout=30  # 30秒のタイムアウト
+            timeout=30,  # 30秒のタイムアウト
         )
-        
+
         # 実行結果の処理
         if result.returncode == 0:
             logger.info(f"Command executed successfully: {result.stdout.strip()}")
@@ -881,18 +926,18 @@ def setPlayerPos(x: float, y: float, z: float, tile: bool = False) -> str:
         else:
             error_msg = f"Command failed with return code {result.returncode}: {result.stderr.strip()}"
             logger.error(error_msg)
-            
+
             # エラーコードに基づいた詳細なエラーメッセージ
             error_details = {
                 1: "Invalid value provided",
                 2: "Connection error to Minecraft server",
                 3: "Invalid argument",
-                4: "Unexpected error in script execution"
+                4: "Unexpected error in script execution",
             }
-            
+
             error_detail = error_details.get(result.returncode, "Unknown error")
             return f"Error: {error_detail} - {result.stderr.strip()}"
-            
+
     except subprocess.TimeoutExpired:
         error_msg = "Command execution timed out after 30 seconds"
         logger.error(error_msg)
@@ -911,24 +956,27 @@ def setPlayerPos(x: float, y: float, z: float, tile: bool = False) -> str:
         logger.error(error_msg)
         return f"Error: {error_msg}"
 
+
 @mcp.tool()
 def postToChat(message: str) -> str:
     """
     Post a message to the Minecraft chat.
-    
+
     Args:
         message: Message to post to chat, required, str
-    
+
     Returns:
         Result message
     """
     # 入力値の検証
     try:
         if not isinstance(message, str):
-            error_msg = f"Parameter message must be a string, got {type(message).__name__}"
+            error_msg = (
+                f"Parameter message must be a string, got {type(message).__name__}"
+            )
             logger.error(error_msg)
             return f"Error: {error_msg}"
-        
+
         if not message:
             error_msg = "Message cannot be empty"
             logger.error(error_msg)
@@ -937,17 +985,17 @@ def postToChat(message: str) -> str:
         error_msg = f"Parameter validation error: {str(e)}"
         logger.error(error_msg)
         return f"Error: {error_msg}"
-    
+
     # スクリプトパスの設定と検証
     script_path = os.path.join(this_file_dir, "tools/postToChat.py")
     if not os.path.exists(script_path):
         error_msg = f"Script not found: {script_path}"
         logger.error(error_msg)
         return f"Error: {error_msg}"
-    
+
     script_dir = os.path.dirname(script_path)
     script_name = os.path.basename(script_path)
-    
+
     # コマンドの構築
     command = ["uv", "run", script_name, "--message", message]
 
@@ -960,11 +1008,11 @@ def postToChat(message: str) -> str:
         result = subprocess.run(
             command,
             cwd=script_dir,
-            capture_output=True, 
+            capture_output=True,
             text=True,
-            timeout=30  # 30秒のタイムアウト
+            timeout=30,  # 30秒のタイムアウト
         )
-        
+
         # 実行結果の処理
         if result.returncode == 0:
             logger.info(f"Command executed successfully: {result.stdout.strip()}")
@@ -972,18 +1020,18 @@ def postToChat(message: str) -> str:
         else:
             error_msg = f"Command failed with return code {result.returncode}: {result.stderr.strip()}"
             logger.error(error_msg)
-            
+
             # エラーコードに基づいた詳細なエラーメッセージ
             error_details = {
                 1: "Invalid value provided",
                 2: "Connection error to Minecraft server",
                 3: "Invalid argument",
-                4: "Unexpected error in script execution"
+                4: "Unexpected error in script execution",
             }
-            
+
             error_detail = error_details.get(result.returncode, "Unknown error")
             return f"Error: {error_detail} - {result.stderr.strip()}"
-            
+
     except subprocess.TimeoutExpired:
         error_msg = "Command execution timed out after 30 seconds"
         logger.error(error_msg)
@@ -1002,22 +1050,23 @@ def postToChat(message: str) -> str:
         logger.error(error_msg)
         return f"Error: {error_msg}"
 
+
 @mcp.tool()
 def getHeight(x: int, z: int) -> int:
     """
     Get the height of the highest non-air block at the specified x,z coordinates.
-    
+
     Args:
         x: x coordinate, required, int
         z: z coordinate, required, int
-    
+
     Returns:
         Height (y-coordinate) as an integer
     """
     # 入力値の検証
     try:
         # 整数型の検証
-        for param_name, param_value in [('x', x), ('z', z)]:
+        for param_name, param_value in [("x", x), ("z", z)]:
             if not isinstance(param_value, int):
                 error_msg = f"Parameter {param_name} must be an integer, got {type(param_value).__name__}"
                 logger.error(error_msg)
@@ -1026,17 +1075,17 @@ def getHeight(x: int, z: int) -> int:
         error_msg = f"Parameter validation error: {str(e)}"
         logger.error(error_msg)
         return f"Error: {error_msg}"
-    
+
     # スクリプトパスの設定と検証
     script_path = os.path.join(this_file_dir, "tools/getHeight.py")
     if not os.path.exists(script_path):
         error_msg = f"Script not found: {script_path}"
         logger.error(error_msg)
         return f"Error: {error_msg}"
-    
+
     script_dir = os.path.dirname(script_path)
     script_name = os.path.basename(script_path)
-    
+
     # コマンドの構築
     command = ["uv", "run", script_name, "--x", str(x), "--z", str(z)]
 
@@ -1049,11 +1098,11 @@ def getHeight(x: int, z: int) -> int:
         result = subprocess.run(
             command,
             cwd=script_dir,
-            capture_output=True, 
+            capture_output=True,
             text=True,
-            timeout=30  # 30秒のタイムアウト
+            timeout=30,  # 30秒のタイムアウト
         )
-        
+
         # 実行結果の処理
         if result.returncode == 0:
             logger.info(f"Command executed successfully: {result.stdout.strip()}")
@@ -1064,18 +1113,18 @@ def getHeight(x: int, z: int) -> int:
         else:
             error_msg = f"Command failed with return code {result.returncode}: {result.stderr.strip()}"
             logger.error(error_msg)
-            
+
             # エラーコードに基づいた詳細なエラーメッセージ
             error_details = {
                 1: "Invalid value provided",
                 2: "Connection error to Minecraft server",
                 3: "Invalid argument",
-                4: "Unexpected error in script execution"
+                4: "Unexpected error in script execution",
             }
-            
+
             error_detail = error_details.get(result.returncode, "Unknown error")
             return f"Error: {error_detail} - {result.stderr.strip()}"
-            
+
     except subprocess.TimeoutExpired:
         error_msg = "Command execution timed out after 30 seconds"
         logger.error(error_msg)
