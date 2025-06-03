@@ -1,0 +1,13 @@
+[project]
+name = "client"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.2.6",
+    "pillow>=11.2.1",
+    "strands-agents>=0.1.5",
+    "strands-agents-tools>=0.1.4",
+    "xlib>=0.21",
+]

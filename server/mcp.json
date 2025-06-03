@@ -1,0 +1,13 @@
+{
+    "mcpServers": {
+        "minecraft": {
+            "command": "uv",
+            "args": [
+                "--directory",
+                "/path/to/clone/directory/mcp-mcp/server",
+                "run",
+                "minecraft.py"
+            ]
+        }
+    }
+}
