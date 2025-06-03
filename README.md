@@ -1,21 +1,17 @@
-# Minecraft Playing MCP (Model Context Protocol)
+# MCP (Model Context Protocol)　- MCP(Minecraft Playing) 
 
-Minecraft Playing MCPは、Model Context Protocol (MCP)を使用してMinecraftを操作するAIエージェントシステムです。AIがMinecraftの世界で建築や操作を行うことができます。
+MCP-MCP は、[Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) を使用して Minecraft を操作する AI エージェントです。
+[Strands Agents](https://strandsagents.com/latest/) でビルドした AI が Minecraft の世界で建築や操作を行うことができます。  
+![image](./image/image000.png)
 
 ## 必要条件
 
 ### システム要件
-- Python 3.8以上（サーバー側）
-- Python 3.12（クライアント側）
-- Minecraft Pi Edition または互換サーバー
-- Linux環境（Raspberry Piなど）
+- Raspberry Pi 4 Model B (動作確認済)  
+- Minecraft Pi Edition 
 
-### 必須パッケージ
-- AWS CLI（Amazon Bedrock APIへのアクセスに必要）
-- uv（Python パッケージマネージャー）
-- mcpi（Minecraft Pi API）
-- strands-agents（AIエージェントライブラリ）
-- Pillow, numpy, xlib（スクリーンショット機能に必要）
+## 構成
+![image](./image/image001.png)
 
 ## セットアップ手順
 
@@ -26,12 +22,11 @@ Minecraft Playing MCPは、Model Context Protocol (MCP)を使用してMinecraft�
 sudo apt install awscli -y
 
 # uvのインストール
-curl -sSf https://install.python-poetry.org | python3 -
-pip install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 ### 2. AWS認証情報の設定
-Amazon Bedrock APIを使用するため、AWS認証情報を設定します：
+Amazon Bedrock APIを使用するため、AWS認証情報を設定します  
 
 ```bash
 aws configure
@@ -43,12 +38,14 @@ aws configure
 - Default region name（例：us-east-1 - Bedrockが利用可能なリージョンを選択）
 - Default output format（json推奨）
 
+※ 設定する IAM ユーザーに AmazonBedrockFullAccess がアタッチされていることを前提とします
+
 ### 3. リポジトリのセットアップ
 
 ```bash
 # リポジトリのクローン
 git clone https://github.com/yourusername/mcp-mcp.git
-cd mcp-mcp
+cd mcp-mcp/basic
 
 # サーバー側の依存関係インストール
 cd server
@@ -62,11 +59,14 @@ cd ..
 ```
 
 ### 4. Minecraft Pi Editionの準備
-Minecraft Pi Editionを起動し、新しいゲームを開始してください。または、Raspberry Juiceプラグインを使用したMinecraftサーバーを準備してください。
+Minecraft Pi Edition を起動し、新しいゲームを開始してください。
 
 ## 使用方法
 
 ### 1. クライアントの起動
+事前に `./basic/server/mcp.json` の `"/path/to/clone/directory/mcp-mcp/server"` の部分を実際の絶対パスに修正します  
+例: `/home/pi/Desktop/mcp-mcp/server/basic` 
+
 以下のコマンドでAIエージェントクライアントを起動します：
 
 ```bash
@@ -107,26 +107,10 @@ AIエージェントは以下のツールを使用してMinecraftを操作でき
 - **AWS認証エラー**: `aws configure`で認証情報が正しく設定されているか確認してください
 - **Python環境エラー**: クライアント側はPython 3.12、サーバー側はPython 3.8以上であることを確認してください
 
-### 依存関係の問題
-クライアント側の依存関係に問題がある場合は、以下のコマンドで手動インストールを試してください：
-```bash
-cd client
-uv pip install numpy pillow strands-agents strands-agents-tools xlib
-```
-
-サーバー側の依存関係に問題がある場合：
-```bash
-cd server
-uv pip install mcpi
-```
-
 ### ログの確認
 エラーが発生した場合は、以下のログファイルを確認してください：
 - クライアントログ: `client/logs/`
 - サーバーログ: `server/logs/`
 
 ## 注意事項
-- このツールはPython 3.8以上で動作します（クライアント側は3.12必須）
-- Minecraft Pi EditionまたはRaspberry Juiceプラグインが必要です
-- AWS Bedrockの利用には料金が発生する場合があります
-- スクリーンショット機能はX Window Systemが必要です
+- Raspberry Pi はサンドボックス環境で業務利用していないものであることを前提とします
