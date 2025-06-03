@@ -15,7 +15,7 @@ MCP-MCP は、[Model Context Protocol (MCP)](https://modelcontextprotocol.io/int
 
 ## セットアップ手順
 
-※詳細記事はブログ(Work in progress)にて掲載予定
+※詳細記事は 2025/7 公開の Builders Flash に掲載予定
 
 ### 1. 必要なツールのインストール
 
