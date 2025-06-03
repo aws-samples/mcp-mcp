@@ -1,4 +1,4 @@
-# MCP (Model Context Protocol)　- MCP(Minecraft Playing) 
+# MCP(Model Context Protocol)-MCP(Minecraft Playing) 
 
 MCP-MCP は、[Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) を使用して Minecraft を操作する AI エージェントです。
 [Strands Agents](https://strandsagents.com/latest/) でビルドした AI が Minecraft の世界で建築や操作を行うことができます。  
