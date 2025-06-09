@@ -55,16 +55,6 @@ Follow the prompts to enter the following information:
 # リポジトリのクローン / Clone the repository
 git clone https://github.com/yourusername/mcp-mcp.git
 cd mcp-mcp/basic
-
-# サーバー側の依存関係インストール / Install server-side dependencies
-cd server
-uv sync
-cd ..
-
-# クライアント側の依存関係インストール / Install client-side dependencies
-cd client
-uv sync
-cd ..
 ```
 
 ### 4. Minecraft Pi Editionの準備 / Preparing Minecraft Pi Edition
